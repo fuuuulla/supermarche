@@ -91,3 +91,95 @@ body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--gray); 
   border-radius: 6px;
   cursor: pointer;
 }
+/* خلفية النافذة المنبثقة */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* خلفية سوداء شفافة */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* التأكد أنها فوق كل شيء */
+}
+
+/* صندوق الفورم */
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 450px;
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* زر الإغلاق X */
+.close-popup {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+}
+
+/* تنسيق الفورم */
+.checkout-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.input-group label {
+    font-size: 14px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.input-group input, .input-group textarea {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.input-group textarea {
+    height: 80px;
+    resize: none;
+}
+
+/* زر التأكيد */
+.confirm-btn {
+    background: #27ae60;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+.confirm-btn:hover {
+    background: #219150;
+}

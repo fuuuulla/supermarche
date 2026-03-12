@@ -1,33 +1,45 @@
-export default function CartModal({ cart, onClose, onRemove, onQty }) {
-  const total = cart.reduce(
-    (s, i) => s + i.price * i.qty,
-    0
-  );
+import React, { useState } from 'react';
 
-  return (
-    <div className="overlay">
-      <div className="modal">
-        <h3>🛍 Panier</h3>
+const CartModal = ({ cart, onClose, onCheckout }) => {
+    const [customer, setCustomer] = useState({ name: '', phone: '', address: '' });
+    const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
 
-        {cart.length === 0 && <p>Panier vide</p>}
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onCheckout(customer);
+    };
 
-        {cart.map((item) => (
-          <div key={item.id} className="cart-item">
-            <span>{item.name}</span>
-            <div>
-              <button onClick={() => onQty(item.id, -1)}>-</button>
-              <span>{item.qty}</span>
-              <button onClick={() => onQty(item.id, 1)}>+</button>
-              <button onClick={() => onRemove(item.id)}>❌</button>
+    return (
+        <div className="modal-overlay">
+            <div className="modal-content">
+                <button className="close-popup" onClick={onClose}>&times;</button>
+                <h2>Finaliser la commande</h2>
+                
+                <div className="order-summary">
+                    <p>Total à payer: <strong>{total} DA</strong></p>
+                </div>
+
+                <form onSubmit={handleSubmit} className="checkout-form">
+                    <div className="input-group">
+                        <label>Nom complet</label>
+                        <input type="text" placeholder="Ex: Ahmed Ben" value={customer.name} onChange={(e) => setCustomer({...customer, name: e.target.value})} required />
+                    </div>
+
+                    <div className="input-group">
+                        <label>Téléphone</label>
+                        <input type="tel" placeholder="05XX XX XX XX" value={customer.phone} onChange={(e) => setCustomer({...customer, phone: e.target.value})} required />
+                    </div>
+
+                    <div className="input-group">
+                        <label>Adresse de livraison</label>
+                        <textarea placeholder="Votre adresse exacte" value={customer.address} onChange={(e) => setCustomer({...customer, address: e.target.value})} required></textarea>
+                    </div>
+
+                    <button type="submit" className="confirm-btn">Confirmer l'achat</button>
+                </form>
             </div>
-          </div>
-        ))}
+        </div>
+    );
+};
 
-        <h4>Total: {total} DA</h4>
-
-        <button className="checkout">Checkout</button>
-        <button className="close" onClick={onClose}>Fermer</button>
-      </div>
-    </div>
-  );
-}
+export default CartModal;

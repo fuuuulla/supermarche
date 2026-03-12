@@ -29,14 +29,23 @@ function App() {
   const removeFromCart = (id) => setCart(cart.filter((i) => i.id !== id));
   const changeQty = (id, d) => setCart(cart.map((i) => i.id === id ? { ...i, qty: Math.max(1, i.qty + d) } : i));
 
-  const handleCheckout = async () => {
+  // --- التعديل هنا: نزيدو customerData كبرامتر ---
+  const handleCheckout = async (customerData) => {
     if (cart.length === 0) return alert("Panier vide");
+    
     try {
-      await api.post("/checkout", { items: cart, total: cart.reduce((s, i) => s + i.price * i.qty, 0) });
+      await api.post("/checkout", { 
+        customer: customerData, // نبعثو معلومات الزبون اللي جات من Modal
+        items: cart, 
+        total: cart.reduce((s, i) => s + i.price * i.qty, 0) 
+      });
+      
       alert("Commande envoyée avec succès !");
       setCart([]);
       setShowCart(false);
-    } catch (e) { alert("Erreur lors de l'envoi"); }
+    } catch (e) { 
+      alert("Erreur lors de l'envoi"); 
+    }
   };
 
   const filteredProducts = products.filter(p => 
@@ -63,12 +72,19 @@ function App() {
           ))}
         </div>
         <aside className="sidebar">
-          <Cart cart={cart} onRemove={removeFromCart} onQty={changeQty} onCheckout={handleCheckout} />
+          {/* هنا نفتحو الـ Modal برك، ما نبعثوش الطلبية مباشرة */}
+          <Cart cart={cart} onRemove={removeFromCart} onQty={changeQty} onCheckout={() => setShowCart(true)} />
         </aside>
       </main>
 
       {showCart && (
-        <CartModal cart={cart} onClose={() => setShowCart(false)} onRemove={removeFromCart} onQty={changeQty} onCheckout={handleCheckout} />
+        <CartModal 
+          cart={cart} 
+          onClose={() => setShowCart(false)} 
+          onRemove={removeFromCart} 
+          onQty={changeQty} 
+          onCheckout={handleCheckout} // هادي راح تستقبل customer وتعيط لـ handleCheckout(customer)
+        />
       )}
     </div>
   );
