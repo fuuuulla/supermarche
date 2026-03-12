@@ -1,5 +1,5 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "http://localhost/monsite/wp-json/supermarche/v1",
+  baseURL: "https://dev-fulla-market.pantheonsite.io/wp-json/supermarche/v1"
 });
