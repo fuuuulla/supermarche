@@ -1,146 +1,688 @@
-/* --- 1. إعدادات الصفحة الأساسية --- */
-.app-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background-color: #f8f9fa;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* --- 1. Variables & Reset --- */
+:root {
+  --primary: #4CAF50; /* A more vibrant, fresh green */
+  --primary-hover: #45a049;
+  --secondary: #ff9800; /* Subtle accent color for actions */
+  --bg-color: #f7f9fc;
+  --surface: #ffffff;
+  --text-main: #2d3748;
+  --text-muted: #718096;
+  --border-color: #e2e8f0;
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --radius: 12px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* --- 2. تنظيم الحاوية الكبرى --- */
-.container {
-  display: flex;
-  flex-direction: row; /* يضمن وجود المنتجات بجانب السلة في الحاسوب */
-  align-items: flex-start;
-  justify-content: center;
-  gap: 30px;
-  max-width: 1300px;
-  margin: 20px auto;
-  padding: 0 20px;
-  width: 100%;
+/* Dark Mode Variables */
+[data-theme="dark"] {
+  --bg-color: #0f172a;
+  --surface: #1e293b;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: #334155;
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+* {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
-/* --- 3. شبكة المنتجات (تعديل العرض) --- */
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+button {
+  font-family: inherit;
+  transition: var(--transition);
+}
+
+/* --- 2. Animations --- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes modalPop {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes bump {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15) translateY(-2px); }
+  100% { transform: scale(1); }
+}
+
+@keyframes skeletonPulse {
+  0% { background-color: var(--border-color); }
+  50% { background-color: rgba(226, 232, 240, 0.5); }
+  100% { background-color: var(--border-color); }
+}
+
+[data-theme="dark"] @keyframes skeletonPulse {
+  0% { background-color: var(--border-color); }
+  50% { background-color: rgba(51, 65, 85, 0.5); }
+  100% { background-color: var(--border-color); }
+}
+
+/* --- 3. Navbar Layout (Refined) --- */
+.navbar {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 15px 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-container {
+  flex: 0 1 500px;
+  margin: 0 20px;
+  position: relative;
+}
+
+.search-container input {
+  width: 100%;
+  padding: 12px 20px;
+  padding-left: 45px;
+  border-radius: 30px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+  font-size: 0.95rem;
+  transition: var(--transition);
+  outline: none;
+}
+
+.search-container input:focus {
+  border-color: var(--primary);
+  background-color: var(--surface);
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+/* Adding a search icon pseudo-element effect */
+.search-container::before {
+  content: '🔍';
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.theme-toggle-btn {
+  background: var(--surface);
+  border: 2px solid var(--border-color);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-toggle-btn:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.cart-icon-btn {
+  background: var(--surface);
+  color: var(--text-main);
+  border: 2px solid var(--border-color);
+  padding: 10px 24px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cart-icon-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.cart-icon-btn.bump {
+  animation: bump 0.3s ease-out;
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* --- 4. Main Layout Container --- */
+.container {
+  display: flex;
+  max-width: 1400px;
+  margin: 30px auto;
+  padding: 0 20px;
+  gap: 30px;
+  align-items: flex-start;
+}
+
 .products-grid {
-  flex: 3; /* يأخذ مساحة أكبر */
+  flex: 3;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 25px;
 }
 
-/* --- 4. السلة الجانبية (Sidebar) --- */
 .sidebar {
-  flex: 1; /* يأخذ مساحة أقل */
-  min-width: 300px;
-  max-width: 350px;
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  flex: 1;
+  min-width: 320px;
   position: sticky;
-  top: 100px; /* يبقى ظاهراً عند التمرير */
+  top: 100px;
+  animation: slideInRight 0.5s ease-out;
 }
 
-/* --- 5. استايل البطاقة (Product Card) لضمان عدم التداخل --- */
-.product-card {
-  background: white;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transition: transform 0.2s;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.product-card img {
-  width: 100%;
-  height: 200px;
-  object-fit: contain; /* يمنع تشوه الصور */
-  background: #fdfdfd;
-}
-
-/* --- 6. الفلتر (Filter Bar) --- */
+/* --- 5. Categories Filter Bar --- */
 .filter-bar {
   display: flex;
   justify-content: center;
-  gap: 15px;
-  padding: 20px;
-  background: white;
-  border-bottom: 1px solid #eee;
   flex-wrap: wrap;
+  gap: 12px;
+  margin: 30px auto !important;
+  max-width: 800px;
+  padding: 0 20px;
 }
 
-/* --- 7. Responsive (التعديل للهاتف) --- */
-@media (max-width: 992px) {
-  .container {
-    flex-direction: column; /* السلة تنزل لتحت في الشاشات المتوسطة والصغيرة */
-    align-items: center;
-  }
+.filter-btn {
+  background: var(--surface);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color) !important;
+  padding: 10px 24px !important;
+  border-radius: 30px !important;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
 
+.filter-btn:hover {
+  color: var(--primary);
+  border-color: var(--primary) !important;
+  transform: translateY(-2px);
+}
+
+.filter-btn.active {
+  background: var(--primary) !important;
+  color: white !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+}
+
+/* --- 6. Product Card Styles --- */
+.product-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.5s ease-out backwards;
+}
+
+/* Stagger animation for cards (needs JS slightly, but doing a basic nth-child here) */
+.product-card:nth-child(2) { animation-delay: 0.1s; }
+.product-card:nth-child(3) { animation-delay: 0.2s; }
+.product-card:nth-child(4) { animation-delay: 0.3s; }
+
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-hover);
+}
+
+.product-image-container {
+  height: 180px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  background-color: var(--bg-color); /* subtle background behind images */
+  padding: 15px;
+  overflow: hidden;
+}
+
+.product-image-container img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 0.4s ease;
+}
+
+.product-card:hover .product-image-container img {
+  transform: scale(1.08);
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.product-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.product-price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 20px;
+  margin-top: auto; /* push price and button to bottom */
+}
+
+.add-btn {
+  background: var(--surface);
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+}
+
+.add-btn:hover {
+  background: var(--primary);
+  color: white;
+  transform: scale(1.02);
+}
+
+/* Skeletons */
+.skeleton-card {
+  pointer-events: none;
+}
+.skeleton-img {
+  width: 100%;
+  height: 180px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  animation: skeletonPulse 1.5s infinite ease-in-out;
+}
+.skeleton-text {
+  height: 20px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  animation: skeletonPulse 1.5s infinite ease-in-out;
+}
+.skeleton-text.title {
+  width: 70%;
+  margin: 0 auto 15px;
+}
+.skeleton-text.price {
+  width: 40%;
+  height: 25px;
+  margin: auto auto 20px;
+}
+.skeleton-button {
+  height: 45px;
+  border-radius: 8px;
+  width: 100%;
+  animation: skeletonPulse 1.5s infinite ease-in-out;
+}
+
+/* --- 7. Sidebar Cart Styles --- */
+.cart {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 25px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+}
+
+.cart h3 {
+  font-size: 1.2rem;
+  color: var(--text-main);
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--bg-color) !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cart-item {
+  background: var(--bg-color);
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 12px !important;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: var(--transition);
+  border: 1px solid transparent;
+}
+
+.cart-item:hover {
+  border-color: #ffdce0;
+  background: #fffafa;
+}
+
+.cart-item > div:first-child {
+  font-weight: 600;
+  margin-bottom: 5px;
+  padding-right: 25px; /* space for delete button */
+}
+
+.empty-cart-state {
+  text-align: center;
+  padding: 30px 10px;
+  color: var(--text-muted);
+}
+
+.empty-cart-state small {
+  display: block;
+  margin-top: 5px;
+  opacity: 0.8;
+}
+
+.checkout {
+  background: var(--primary);
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin-top: 25px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.checkout:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+}
+
+/* --- 8. Beautiful Confirm Modal --- */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: var(--surface);
+  padding: 40px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 480px;
+  position: relative;
+  box-shadow: var(--shadow-lg);
+  animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-content h2 {
+  color: var(--text-main);
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.modal-content p {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-content p strong {
+  color: var(--primary);
+  font-size: 1.3rem;
+}
+
+/* Modal Cart Items (Mobile Specific Fix) */
+.modal-cart-items {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.modal-cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: var(--bg-color);
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.modal-cart-item-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-cart-item-info span {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.modal-cart-item-info small {
+  color: var(--text-muted);
+}
+
+.modal-remove-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  transition: var(--transition);
+}
+
+.modal-remove-btn:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.modal-total {
+  font-size: 1.2rem !important;
+  margin-bottom: 20px !important;
+  padding-bottom: 0 !important;
+  border-bottom: none !important;
+}
+
+.checkout-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 0;
+}
+
+.checkout-form input, 
+.checkout-form textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 1rem;
+  background-color: var(--bg-color);
+  transition: var(--transition);
+  outline: none;
+}
+
+.checkout-form input:focus, 
+.checkout-form textarea:focus {
+  border-color: var(--primary);
+  background-color: var(--surface);
+  box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.1);
+}
+
+.checkout-form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.input-error {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1) !important;
+}
+
+.form-error {
+  display: block;
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin-top: -10px;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.confirm-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.confirm-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+/* Modal close button (the cancel one) */
+.checkout-form button[type="button"] {
+  background: transparent !important;
+  border: 2px solid transparent !important;
+  color: var(--text-muted) !important;
+  padding: 12px !important;
+  border-radius: 10px !important;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.checkout-form button[type="button"]:hover {
+  background: var(--bg-color) !important;
+  color: #ef4444 !important;
+}
+
+/* --- 9. Responsive Adjustments --- */
+@media (max-width: 1024px) {
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .container {
+    flex-direction: column;
+    padding: 0 15px;
+    margin-top: 20px;
+  }
+  
   .sidebar {
-    width: 100%;
-    max-width: 100%;
-    position: static;
-    order: 2; /* يضع السلة بعد المنتجات */
+    display: none; /* Keep hidden as in original */
   }
 
   .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     width: 100%;
-    order: 1;
+    margin-bottom: 80px; /* space for a potential sticky cart footer if wanted, or just breathing room */
+  }
+
+  .navbar {
+    padding: 15px;
+  }
+
+  .search-container {
+    order: 3;
+    width: 100%;
+    margin: 15px 0 0 0;
+    flex: 1 1 100%;
+  }
+
+  .filter-bar {
+    padding: 0 10px;
   }
 }
 
 @media (max-width: 480px) {
   .products-grid {
-    grid-template-columns: repeat(2, 1fr); /* منتجين في السطر للهاتف */
-    gap: 10px;
+    grid-template-columns: 1fr 1fr; /* 2 columns on very small devices */
+    gap: 15px;
   }
-}
-/* Style spécifique pour la carte produit */
-.product-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  background: white;
-  border-radius: 12px;
-  padding: 15px;
-  text-align: center;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-  transition: transform 0.2s;
-}
-
-.product-card:hover {
-  transform: translateY(-5px);
-}
-
-.product-image-container {
-  height: 180px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 15px;
-}
-
-.product-card img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-}
-
-.product-price {
-  font-weight: bold;
-  color: #27ae60;
-  font-size: 1.2rem;
-  margin: 10px 0;
-}
-
-.add-btn {
-  background-color: #2c3e50;
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  width: 100%;
+  
+  .product-image-container {
+    height: 140px;
+  }
+  
+  .product-card {
+    padding: 15px;
+  }
+  
+  .modal-content {
+    padding: 25px;
+  }
 }

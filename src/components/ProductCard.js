@@ -5,7 +5,7 @@ export default function ProductCard({ product, onAdd }) {
         <img src={product.image} alt={product.name} />
       </div>
       <div className="product-info">
-        <h3>{product.name}</h3>
+        <h3 className="product-name">{product.name}</h3>
         <p className="product-price">{product.price} DA</p>
         <button className="add-btn" onClick={() => onAdd(product)}>
           Ajouter au panier
