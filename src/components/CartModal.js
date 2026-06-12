@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const CartModal = ({ cart, onClose, onCheckout, onRemove, onQty }) => {
+const CartModal = ({ cart, onClose, onCheckout, onRemove }) => {
     const [customer, setCustomer] = useState({ name: '', phone: '', address: '' });
     const [errors, setErrors] = useState({});
     const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
@@ -8,7 +8,6 @@ const CartModal = ({ cart, onClose, onCheckout, onRemove, onQty }) => {
     const validateForm = () => {
         let newErrors = {};
         if (customer.name.trim().length < 3) newErrors.name = "Le nom doit contenir au moins 3 caractères.";
-        // Simple Algerian phone number validation (10 digits starting with 0)
         if (!/^0[567][0-9]{8}$/.test(customer.phone)) newErrors.phone = "Numéro invalide (ex: 05xx/06xx/07xx...)";
         if (customer.address.trim().length < 8) newErrors.address = "Veuillez fournir une adresse détaillée.";
         
@@ -28,15 +27,16 @@ const CartModal = ({ cart, onClose, onCheckout, onRemove, onQty }) => {
             <div className="modal-content">
                 <h2>Finaliser la commande</h2>
                 
-                {/* Mobile Cart Items Display (visible primarily if sidebar is hidden) */}
                 <div className="modal-cart-items">
                     {cart.map(item => (
                         <div key={item.id} className="modal-cart-item">
+                            {/* Aligné proprement à gauche */}
                             <div className="modal-cart-item-info">
-                                <span>{item.name}</span>
-                                <small>{item.price} DA x {item.qty}</small>
+                                <span className="modal-item-name">{item.name}</span>
+                                <small className="modal-item-meta">{item.price} DA x {item.qty}</small>
                             </div>
-                            <button type="button" onClick={() => onRemove(item.id)} className="modal-remove-btn">
+                            {/* Corbeille alignée à droite sur la même ligne */}
+                            <button type="button" onClick={() => onRemove(item.id)} className="modal-remove-btn" title="Supprimer">
                                 🗑️
                             </button>
                         </div>
@@ -44,6 +44,7 @@ const CartModal = ({ cart, onClose, onCheckout, onRemove, onQty }) => {
                 </div>
 
                 <p className="modal-total">Total: <strong>{total} DA</strong></p>
+                
                 <form onSubmit={handleSubmit} className="checkout-form">
                     <div className="input-group">
                         <input 
@@ -74,8 +75,9 @@ const CartModal = ({ cart, onClose, onCheckout, onRemove, onQty }) => {
                         ></textarea>
                         {errors.address && <span className="form-error">{errors.address}</span>}
                     </div>
+                    
                     <button type="submit" className="confirm-btn">Confirmer l'achat</button>
-                    <button type="button" onClick={onClose} style={{background:'none', border:'none', color:'#666', marginTop:'10px', cursor:'pointer'}}>Annuler</button>
+                    <button type="button" onClick={onClose} className="cancel-btn">Annuler</button>
                 </form>
             </div>
         </div>

@@ -13,7 +13,7 @@ export default function Navbar({ cartCount, onOpenCart, onSearch, theme, onToggl
   return (
     <nav className="navbar">
       {/* اللوغو الآن يأخذ الستايل من App.css تلقائياً */}
-      <div className="logo">MARKET PRO</div>
+      <div className="logo">MY MARKET</div>
 
       {/* وضعنا حقل البحث داخل div لتنظيمه في الوسط */}
       <div className="search-container">

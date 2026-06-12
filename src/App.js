@@ -10,7 +10,6 @@ import "./App.css";
 function App() {
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState(() => {
-    // Initialize cart from localStorage if available
     const savedCart = localStorage.getItem("cart");
     return savedCart ? JSON.parse(savedCart) : [];
   });
@@ -18,14 +17,15 @@ function App() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("Tous");
   const [isLoading, setIsLoading] = useState(true);
-  const [theme, setTheme] = useState("light");
+  
+  // Par défaut en mode 'dark' pour correspondre au look initial
+  const [theme, setTheme] = useState("dark");
 
-  // Apply theme to body
+  // Gère correctement l'application du thème sur le body
   useEffect(() => {
     document.body.setAttribute('data-theme', theme);
   }, [theme]);
 
-  // Save cart to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
@@ -55,11 +55,8 @@ function App() {
   const removeFromCart = (id) => setCart(cart.filter((i) => i.id !== id));
   const changeQty = (id, d) => setCart(cart.map((i) => i.id === id ? { ...i, qty: Math.max(1, i.qty + d) } : i));
 
-  // --- يجب أن تكون هذه الدالة هنا (داخل App) لكي ترى 'cart' و 'api' ---
   const handleCheckout = async (customerData) => {
     if (cart.length === 0) return toast.error("Le panier est vide");
-    
-    // Simulate loading toast
     const loadingToast = toast.loading("Envoi de la commande...");
     
     try {
@@ -95,13 +92,13 @@ function App() {
         onToggleTheme={() => setTheme(theme === 'light' ? 'dark' : 'light')}
       />
 
-      <div className="filter-bar" style={{textAlign:'center', margin:'20px 0'}}>
+      {/* Nettoyage des styles en ligne ici pour laisser le CSS agir selon le thème */}
+      <div className="filter-bar">
         {categories.map(cat => (
           <button 
             key={cat} 
             onClick={() => setCategory(cat)} 
             className={`filter-btn ${category === cat ? "active" : ""}`}
-            style={{margin:'0 5px', padding:'8px 15px', borderRadius:'20px', cursor:'pointer', border:'1px solid #27ae60'}}
           >
             {cat}
           </button>
@@ -111,7 +108,6 @@ function App() {
       <main className="container">
         <div className="products-grid">
           {isLoading ? (
-            // Show 4 Skeletons while loading
             Array.from({ length: 4 }).map((_, idx) => (
               <div key={idx} className="product-card skeleton-card">
                 <div className="skeleton-img"></div>
